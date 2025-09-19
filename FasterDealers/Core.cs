@@ -1,12 +1,12 @@
 ﻿using MelonLoader;
 using S1API;
-using S1APITemplate.Integrations;
-using S1APITemplate.Utils;
+using FasterDealers.Integrations;
+using FasterDealers.Utils;
 
-[assembly: MelonInfo(typeof(S1APITemplate.Core), Constants.MOD_NAME, Constants.MOD_VERSION, Constants.MOD_AUTHOR)]
+[assembly: MelonInfo(typeof(FasterDealers.Core), Constants.MOD_NAME, Constants.MOD_VERSION, Constants.MOD_AUTHOR)]
 [assembly: MelonGame(Constants.Game.GAME_STUDIO, Constants.Game.GAME_NAME)]
 
-namespace S1APITemplate
+namespace FasterDealers
 {
     public class Core : MelonMod
     {

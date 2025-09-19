@@ -5,7 +5,7 @@ using Il2CppScheduleOne;
 #endif
 using HarmonyLib;
 
-namespace S1APITemplate.Integrations
+namespace FasterDealers.Integrations
 {
     [HarmonyPatch]
     public static class HarmonyPatches

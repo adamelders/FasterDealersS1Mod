@@ -1,14 +1,14 @@
-﻿namespace S1APITemplate.Utils
+﻿namespace FasterDealers.Utils
 {
     public static class Constants
     {
         /// <summary>
         /// Mod information
         /// </summary>
-        public const string MOD_NAME = "S1APITemplate";
-        public const string MOD_VERSION = "1.0.0";
-        public const string MOD_AUTHOR = "YourName";
-        public const string MOD_DESCRIPTION = "Mod description...";
+        public const string MOD_NAME = "FasterDealers";
+        public const string MOD_VERSION = "2.0.0";
+        public const string MOD_AUTHOR = "Riccaforte";
+        public const string MOD_DESCRIPTION = "A simple mod to make all drug dealer NPCs faster! Speed multiplier can be configured to your desired speed.";
 
         /// <summary>
         /// MelonPreferences configuration
