@@ -5,6 +5,8 @@ using FasterDealers.Utils;
 
 [assembly: MelonInfo(typeof(FasterDealers.Core), Constants.MOD_NAME, Constants.MOD_VERSION, Constants.MOD_AUTHOR)]
 [assembly: MelonGame(Constants.Game.GAME_STUDIO, Constants.Game.GAME_NAME)]
+[assembly: MelonAuthorColor(1, 68, 2, 152)]
+[assembly: MelonColor(1, 0, 223, 255)]
 
 namespace FasterDealers
 {
