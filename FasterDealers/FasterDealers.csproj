@@ -10,7 +10,7 @@
 
 	<!-- Define paths for different configurations -->
 	<PropertyGroup Condition="'$(Configuration)'=='Mono'">
-		<GamePath>"C:\Users\Ramor\Desktop\Schedule 1 Modding\gamefiles\Schedule I Mono"</GamePath>
+		<GamePath>C:\Users\Ramor\Desktop\Schedule 1 Modding\gamefiles\Schedule I Mono</GamePath>
 		<ManagedPath>$(GamePath)\Schedule I_Data\Managed</ManagedPath>
 		<MelonLoaderPath>$(GamePath)\MelonLoader\net35</MelonLoaderPath>
 		<ModsPath>$(GamePath)\Mods</ModsPath>
@@ -18,7 +18,7 @@
 		<AssemblyName>FasterDealers_Mono</AssemblyName>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)'=='CrossCompat'">
-	  <GamePath>C:\Users\Ramor\Desktop\Schedule 1 Modding\gamefiles\Schedule I Mono"</GamePath>
+	  <GamePath>C:\Users\Ramor\Desktop\Schedule 1 Modding\gamefiles\Schedule I Mono</GamePath>
 	  <ManagedPath>$(GamePath)\Schedule I_Data\Managed</ManagedPath>
 	  <MelonLoaderPath>$(GamePath)\MelonLoader\net35</MelonLoaderPath>
 	  <ModsPath>$(GamePath)\Mods</ModsPath>
@@ -27,7 +27,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Il2cpp'">
-		<GamePath>"C:\Users\Ramor\Desktop\Schedule 1 Modding\gamefiles\Schedule I IL2CPP"</GamePath>
+		<GamePath>C:\Users\Ramor\Desktop\Schedule 1 Modding\gamefiles\Schedule I IL2CPP</GamePath>
 		<ManagedPath>$(GamePath)\MelonLoader\Il2CppAssemblies</ManagedPath>
 		<MelonLoaderPath>$(GamePath)\MelonLoader\net6</MelonLoaderPath>
 		<ModsPath>$(GamePath)\Mods</ModsPath>
@@ -36,7 +36,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='CrossCompat'">
-		<GamePath>C:\Users\Ramor\Desktop\Schedule 1 Modding\gamefiles\Schedule I Mono"</GamePath>
+		<GamePath>C:\Users\Ramor\Desktop\Schedule 1 Modding\gamefiles\Schedule I Mono</GamePath>
 		<ManagedPath>$(GamePath)\Schedule I_Data\Managed</ManagedPath>
 		<MelonLoaderPath>$(GamePath)\MelonLoader\net35</MelonLoaderPath>
 		<ModsPath>$(GamePath)\Mods</ModsPath>
@@ -200,7 +200,7 @@
 	  <Compile Include="Utils\Constants.cs" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="S1API.Forked" Version="1.7.0" />
+	  <PackageReference Include="S1API.Forked" Version="1.8.6" />
 	</ItemGroup>
 
 	<PropertyGroup>
