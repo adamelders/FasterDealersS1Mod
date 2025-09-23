@@ -200,7 +200,7 @@
 	  <Compile Include="Utils\Constants.cs" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="S1API.Forked" Version="1.8.6" />
+	  <PackageReference Include="S1API.Forked" Version="1.8.7" />
 	</ItemGroup>
 
 	<PropertyGroup>
