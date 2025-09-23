@@ -1,55 +1,110 @@
-﻿using MelonLoader;
-using ScheduleOne.NPCs;
+﻿using FasterDealers.Integrations;
+using FasterDealers.Utils;
+using MelonLoader;
+using S1API.Entities;
+using S1API.Logging;
+using System.Collections;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(FasterDealers.Core), "FasterDealers", "1.0.0", "Riccaforte", null)]
-[assembly: MelonGame("TVGS", "Schedule I")]
+[assembly: MelonInfo(typeof(FasterDealers.Core), Constants.MOD_NAME, Constants.MOD_VERSION, Constants.MOD_AUTHOR)]
+[assembly: MelonGame(Constants.Game.GAME_STUDIO, Constants.Game.GAME_NAME)]
+[assembly: MelonAuthorColor(1, 68, 2, 152)]
+[assembly: MelonColor(1, 0, 223, 255)]
 
 namespace FasterDealers
 {
     public class Core : MelonMod
     {
+        public static Core? Instance { get; private set; }
+
         private static MelonPreferences_Category fasterDealersCategory;
         private static MelonPreferences_Entry<bool> modEnabled;
         private static MelonPreferences_Entry<float> speedMultiplier;
 
-        public override void OnInitializeMelon() {
+        private Log _logger = new Log("FasterDealers");
+        private bool _speedsBeingSet = false;
+        private int _completedDealers = 0;
+        private const int TOTAL_DEALERS = 6;
+        private readonly object _lock = new object();
+        private HashSet<string> _waitingDealers = new();
+
+        public override void OnInitializeMelon()
+        {
+            Instance = this;
+            HarmonyPatches.SetModInstance(this);
             LoadConfig();
-            LoggerInstance.Msg("Mod initialized and config loaded. Waiting for Main scene to load.");
+            _logger.Msg("Mod initialized and config loaded. Waiting for Main scene to load.");
         }
 
-        public override void OnSceneWasLoaded(int buildIndex, string sceneName) {
-            base.OnSceneWasLoaded(buildIndex, sceneName);
+        public override void OnSceneWasInitialized(int buildIndex, string sceneName) {
+            base.OnSceneWasInitialized(buildIndex, sceneName);
 
-            if (!modEnabled.Value) {
-                LoggerInstance.Msg("FasterDealers mod is disabled, skipping.");
+            if (!modEnabled.Value || sceneName != "Main") {
                 return;
             }
 
-            if (sceneName != "Main") {
-                return; // Only run on the Main scene
+            lock (_lock) {
+                if (_speedsBeingSet) {
+                    _logger.Msg("Dealer speed setting already in progress, skipping...");
+                    return;
+                }
+                _speedsBeingSet = true;
+                _waitingDealers.Clear();
             }
 
-            string[] dealerList = ["Benji", "Molly", "Brad", "Jane", "Wei", "Leo"]; // TODO: would be nice to get all dealer "types" or base class
-
-            foreach (string dealerName in dealerList) {
-                SetDealerSpeedMultiplier(dealerName, speedMultiplier.Value);
-            }
-
-            LoggerInstance.Msg("Speed multiplier of " + speedMultiplier.Value.ToString() + " set for all dealer NPCs!");
+            MelonCoroutines.Start(SetAllDealerSpeeds());
         }
 
-        private void SetDealerSpeedMultiplier(string dealerName, float speed) {
-            GameObject dealer = GameObject.Find(dealerName);
+        private IEnumerator SetAllDealerSpeeds() {
+            _completedDealers = 0;
 
-            if (dealer != null) {
-                NPCSpeedController component = dealer.GetComponent<NPCSpeedController>();
-                if (component != null) {
-                    component.SpeedMultiplier = speed;
-                }
-            } else {
-                Melon<Core>.Logger.Error($"Dealer {dealerName} not found!");
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Northtown.BenjiColeman>(speedMultiplier.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Westville.MollyPresley>(speedMultiplier.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Downtown.BradCrosby>(speedMultiplier.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Docks.JaneLucero>(speedMultiplier.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Suburbia.WeiLong>(speedMultiplier.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Uptown.LeoRivers>(speedMultiplier.Value));
+
+            // Wait for all dealers to be processed
+            while (_completedDealers < TOTAL_DEALERS) {
+                yield return new WaitForSeconds(0.5f);
             }
+
+            _logger.Msg($"Speed multiplier of {speedMultiplier.Value} set for all dealer NPCs!");
+            
+            lock (_lock) {
+                _speedsBeingSet = false;
+                _waitingDealers.Clear();
+            }
+        }
+
+        private IEnumerator WaitAndSetDealerSpeed<T>(float speed) where T : NPC {
+            string dealerName = typeof(T).Name;
+            NPC? dealer = null;
+            bool loggedWaiting = false;
+            
+            while (dealer == null) {
+                dealer = NPC.Get<T>();
+
+                if (dealer == null) {
+
+                    // Only log once per dealer when we start waiting
+                    lock (_lock) {
+                        if (!loggedWaiting && _waitingDealers.Add(dealerName)) {
+                            _logger.Msg($"Waiting for {dealerName} instance to be created...");
+                            loggedWaiting = true;
+                        }
+                    }
+
+                    yield return new WaitForSeconds(0.5f);
+                }
+            }
+
+            dealer.Movement.SpeedMultiplier = speed;
+
+            _logger.Msg($"Set speed multiplier to {speed} for {dealerName}");
+
+            _completedDealers++;
         }
 
         private void LoadConfig() {
