@@ -98,7 +98,6 @@ namespace FasterDealers
 
                 if (dealer == null)
                 {
-
                     // Only log once per dealer when we start waiting
                     lock (_lock)
                     {
