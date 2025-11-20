@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.0
+
+- Update S1API dependency to 2.6.5.
+
 ## 2.1.0
 
 - Update S1API dependency to 2.6.4.
