@@ -4,8 +4,8 @@ This is a simple mod to make all drug dealer NPCs walk faster with a configurabl
 
 ## Requirements
 
-- [MelonLoader v0.7.0+](https://melonwiki.xyz/#/?id=requirements)
-- [S1API Forked by ifBars v2.6.4+](https://www.nexusmods.com/schedule1/mods/1194)
+- [MelonLoader v0.7.0](https://melonwiki.xyz/#/?id=requirements)
+- [S1API Forked by ifBars v2.6.5+](https://www.nexusmods.com/schedule1/mods/1194)
 
 ## Installation
 
