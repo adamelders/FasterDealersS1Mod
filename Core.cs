@@ -41,7 +41,7 @@ namespace FasterDealers
         {
             base.OnSceneWasInitialized(buildIndex, sceneName);
 
-            if (!_modEnabled.Value || sceneName != "Main")
+            if (!_modEnabled!.Value || sceneName != "Main")
             {
                 return;
             }
@@ -64,12 +64,12 @@ namespace FasterDealers
         {
             _completedDealers = 0;
 
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Northtown.BenjiColeman>(_speedMultiplier.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Westville.MollyPresley>(_speedMultiplier.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Downtown.BradCrosby>(_speedMultiplier.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Docks.JaneLucero>(_speedMultiplier.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Suburbia.WeiLong>(_speedMultiplier.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Uptown.LeoRivers>(_speedMultiplier.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Northtown.BenjiColeman>(_speedMultiplier!.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Westville.MollyPresley>(_speedMultiplier!.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Downtown.BradCrosby>(_speedMultiplier!.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Docks.JaneLucero>(_speedMultiplier!.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Suburbia.WeiLong>(_speedMultiplier!.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Uptown.LeoRivers>(_speedMultiplier!.Value));
 
             // Wait for all dealers to be processed
             while (_completedDealers < TOTAL_DEALERS)
@@ -77,7 +77,7 @@ namespace FasterDealers
                 yield return new WaitForSeconds(0.5f);
             }
 
-            _logger.Msg($"Speed multiplier of {_speedMultiplier.Value} set for all dealer NPCs!");
+            _logger.Msg($"Speed multiplier of {_speedMultiplier!.Value} set for all dealer NPCs!");
 
             lock (_lock)
             {
