@@ -12,12 +12,12 @@ Global
 		Mono|Any CPU = Mono|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{04FB9098-F8D3-4836-A8BB-9692AED5BE00}.CrossCompat|Any CPU.ActiveCfg = CrossCompat|Any CPU
-		{04FB9098-F8D3-4836-A8BB-9692AED5BE00}.CrossCompat|Any CPU.Build.0 = CrossCompat|Any CPU
-		{04FB9098-F8D3-4836-A8BB-9692AED5BE00}.Il2cpp|Any CPU.ActiveCfg = Il2cpp|Any CPU
-		{04FB9098-F8D3-4836-A8BB-9692AED5BE00}.Il2cpp|Any CPU.Build.0 = Il2cpp|Any CPU
-		{04FB9098-F8D3-4836-A8BB-9692AED5BE00}.Mono|Any CPU.ActiveCfg = Mono|Any CPU
-		{04FB9098-F8D3-4836-A8BB-9692AED5BE00}.Mono|Any CPU.Build.0 = Mono|Any CPU
+		{6426CB5B-2EEC-4FA8-9728-6E5042A969C1}.CrossCompat|Any CPU.ActiveCfg = CrossCompat|Any CPU
+		{6426CB5B-2EEC-4FA8-9728-6E5042A969C1}.CrossCompat|Any CPU.Build.0 = CrossCompat|Any CPU
+		{6426CB5B-2EEC-4FA8-9728-6E5042A969C1}.Il2cpp|Any CPU.ActiveCfg = Il2cpp|Any CPU
+		{6426CB5B-2EEC-4FA8-9728-6E5042A969C1}.Il2cpp|Any CPU.Build.0 = Il2cpp|Any CPU
+		{6426CB5B-2EEC-4FA8-9728-6E5042A969C1}.Mono|Any CPU.ActiveCfg = Mono|Any CPU
+		{6426CB5B-2EEC-4FA8-9728-6E5042A969C1}.Mono|Any CPU.Build.0 = Mono|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
