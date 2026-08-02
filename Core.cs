@@ -2,13 +2,13 @@
 using FasterDealers.Utils;
 using MelonLoader;
 using S1API.Entities;
+using S1API.Lifecycle;
 using S1API.Logging;
 using System.Collections;
 using UnityEngine;
 
 [assembly: MelonInfo(typeof(FasterDealers.Core), Constants.MOD_NAME, Constants.MOD_VERSION, Constants.MOD_AUTHOR)]
 [assembly: MelonGame(Constants.Game.GAME_STUDIO, Constants.Game.GAME_NAME)]
-[assembly: VerifyLoaderVersion(0, 7, 0, true)]
 [assembly: MelonAuthorColor(1, 68, 2, 152)]
 [assembly: MelonColor(1, 0, 223, 255)]
 
@@ -18,11 +18,11 @@ namespace FasterDealers
     {
         public static Core? Instance { get; private set; }
 
-        private static MelonPreferences_Category fasterDealersCategory;
-        private static MelonPreferences_Entry<bool> modEnabled;
-        private static MelonPreferences_Entry<float> speedMultiplier;
+        private static MelonPreferences_Category? _fasterDealersCategory;
+        private static MelonPreferences_Entry<bool>? _modEnabled;
+        private static MelonPreferences_Entry<float>? _speedMultiplier;
 
-        private Log _logger = new Log("FasterDealers");
+        private Log _logger = new Log(Constants.PREFERENCES_CATEGORY);
         private bool _speedsBeingSet = false;
         private int _completedDealers = 0;
         private const int TOTAL_DEALERS = 6;
@@ -32,16 +32,16 @@ namespace FasterDealers
         public override void OnInitializeMelon()
         {
             Instance = this;
-            HarmonyPatches.SetModInstance(this);
             LoadConfig();
-            _logger.Msg("Mod initialized and config loaded. Waiting for Main scene to load.");
+            HarmonyPatches.Initialize(this);
+            _logger.Msg($"{Constants.MOD_NAME} initialized and config loaded. Waiting for Main scene to load.");
         }
 
         public override void OnSceneWasInitialized(int buildIndex, string sceneName)
         {
             base.OnSceneWasInitialized(buildIndex, sceneName);
 
-            if (!modEnabled.Value || sceneName != "Main")
+            if (!_modEnabled.Value || sceneName != "Main")
             {
                 return;
             }
@@ -64,12 +64,12 @@ namespace FasterDealers
         {
             _completedDealers = 0;
 
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Northtown.BenjiColeman>(speedMultiplier.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Westville.MollyPresley>(speedMultiplier.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Downtown.BradCrosby>(speedMultiplier.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Docks.JaneLucero>(speedMultiplier.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Suburbia.WeiLong>(speedMultiplier.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Uptown.LeoRivers>(speedMultiplier.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Northtown.BenjiColeman>(_speedMultiplier.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Westville.MollyPresley>(_speedMultiplier.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Downtown.BradCrosby>(_speedMultiplier.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Docks.JaneLucero>(_speedMultiplier.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Suburbia.WeiLong>(_speedMultiplier.Value));
+            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Uptown.LeoRivers>(_speedMultiplier.Value));
 
             // Wait for all dealers to be processed
             while (_completedDealers < TOTAL_DEALERS)
@@ -77,7 +77,7 @@ namespace FasterDealers
                 yield return new WaitForSeconds(0.5f);
             }
 
-            _logger.Msg($"Speed multiplier of {speedMultiplier.Value} set for all dealer NPCs!");
+            _logger.Msg($"Speed multiplier of {_speedMultiplier.Value} set for all dealer NPCs!");
 
             lock (_lock)
             {
@@ -121,9 +121,10 @@ namespace FasterDealers
 
         private void LoadConfig()
         {
-            fasterDealersCategory = MelonPreferences.CreateCategory("FasterDealers");
-            modEnabled = fasterDealersCategory.CreateEntry<bool>("Enabled", true);
-            speedMultiplier = fasterDealersCategory.CreateEntry<float>("SpeedMultiplier", 3.0f);
+            _fasterDealersCategory = MelonPreferences.CreateCategory(Constants.PREFERENCES_CATEGORY);
+            _modEnabled = _fasterDealersCategory.CreateEntry<bool>("Enabled", true, "Enable Faster Dealers", "Enables or disables Faster Dealers mod.");
+            _speedMultiplier = _fasterDealersCategory.CreateEntry<float>("SpeedMultiplier", 3.0f, "Dealer Speed Multiplier", "Speed multiplier for all dealers as a float value. Default is 3.0f. Multiplies base dealer speed by this amount.");
+            _fasterDealersCategory.SaveToFile(false);
         }
     }
 }

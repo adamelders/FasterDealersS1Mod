@@ -1,8 +1,3 @@
-﻿#if MONO
-using ScheduleOne;
-#elif IL2CPP
-using Il2CppScheduleOne;
-#endif
 using HarmonyLib;
 
 namespace FasterDealers.Integrations
@@ -12,12 +7,10 @@ namespace FasterDealers.Integrations
     {
         private static Core? _modInstance;
 
-        /// <summary>
-        /// Set the mod instance for patch callbacks
-        /// </summary>
-        public static void SetModInstance(Core modInstance)
+        public static void Initialize(Core modInstance)
         {
             _modInstance = modInstance;
+            modInstance.HarmonyInstance.PatchAll(typeof(HarmonyPatches).Assembly);
         }
     }
 }
