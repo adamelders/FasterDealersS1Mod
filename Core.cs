@@ -26,8 +26,10 @@ namespace FasterDealers
         private bool _speedsBeingSet = false;
         private int _completedDealers = 0;
         private const int TOTAL_DEALERS = 6;
+        private const int SPEED_CONTROL_PRIORITY = 999;
         private readonly object _lock = new object();
         private HashSet<string> _waitingDealers = new();
+        private HashSet<NPC> _controlledDealers = new();
 
         public override void OnInitializeMelon()
         {
@@ -35,6 +37,12 @@ namespace FasterDealers
             LoadConfig();
             HarmonyPatches.Initialize(this);
             _logger.Msg($"{Constants.MOD_NAME} initialized and config loaded. Waiting for Main scene to load.");
+        }
+
+        public override void OnDeinitializeMelon()
+        {
+            RemoveAllSpeedControls();
+            _logger.Msg("Speed controls removed on mod unload.");
         }
 
         public override void OnSceneWasInitialized(int buildIndex, string sceneName)
@@ -98,7 +106,6 @@ namespace FasterDealers
 
                 if (dealer == null)
                 {
-                    // Only log once per dealer when we start waiting
                     lock (_lock)
                     {
                         if (!loggedWaiting && _waitingDealers.Add(dealerName))
@@ -112,11 +119,31 @@ namespace FasterDealers
                 }
             }
 
-            dealer.Movement.SpeedMultiplier = speed;
+            dealer.Movement.AddSpeedControl(Constants.MOD_NAME, SPEED_CONTROL_PRIORITY, speed);
+            _controlledDealers.Add(dealer);
 
             _logger.Msg($"Set speed multiplier to {speed} for {dealerName}");
 
             _completedDealers++;
+        }
+
+        private void RemoveAllSpeedControls()
+        {
+            foreach (NPC? dealer in _controlledDealers)
+            {
+                try
+                {
+                    if (dealer is not null && dealer.Movement.DoesSpeedControlExist(Constants.MOD_NAME))
+                    {
+                        dealer.Movement.RemoveSpeedControl(Constants.MOD_NAME);
+                    }
+                }
+                catch
+                {
+                    // NPC may already be destroyed on IL2CPP at shutdown
+                }
+            }
+            _controlledDealers.Clear();
         }
 
         private void LoadConfig()
