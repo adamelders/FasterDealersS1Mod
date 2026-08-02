@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "S1API Docs": {
+      "type": "sse",
+      "url": "https://gitmcp.io/ifBars/S1API"
+    }
+  }
+}
