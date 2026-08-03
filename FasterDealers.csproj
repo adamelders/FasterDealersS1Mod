@@ -39,8 +39,8 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(UseLocalS1APIForked)' != 'true'">
-    <PackageReference Include="S1API.Forked" Version="3.1.4" />
-    <PackageReference Include="LavaGang.MelonLoader" Version="0.7.1" PrivateAssets="all" NoWarn="NU1701" />
+    <PackageReference Include="S1API.Forked" Version="3.1.5" />
+    <PackageReference Include="LavaGang.MelonLoader" Version="0.7.0" PrivateAssets="all" NoWarn="NU1701" />
     <PackageReference Include="HarmonyX" Version="2.15.0" PrivateAssets="all" />
   </ItemGroup>
 
