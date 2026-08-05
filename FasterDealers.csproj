@@ -23,6 +23,10 @@
 		<MelonLoaderAssembliesPath Condition="'$(MelonLoaderAssembliesPath)' == '' and '$(LocalIl2CppDeploymentPath)' != ''">$(LocalIl2CppDeploymentPath)\MelonLoader\net6</MelonLoaderAssembliesPath>
 	</PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="**\bin\**\*.cs;**\obj\**\*.cs" />
+  </ItemGroup>
+
 	<PropertyGroup Condition="'$(Configuration)' == 'CrossCompat'">
     <DefineConstants>$(DefineConstants);CROSS_COMPAT;MONO</DefineConstants>
     <AssemblyName>FasterDealers</AssemblyName>
