@@ -45,7 +45,6 @@
   <ItemGroup Condition="'$(UseLocalS1APIForked)' != 'true'">
     <PackageReference Include="S1API.Forked" Version="3.1.9" />
     <PackageReference Include="LavaGang.MelonLoader" Version="0.7.0" PrivateAssets="all" NoWarn="NU1701" />
-    <PackageReference Include="HarmonyX" Version="2.15.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseLocalS1APIForked)' == 'true'">
@@ -176,10 +175,6 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseLocalMelonLoaderReferences)' == 'true' and ('$(Configuration)' == 'CrossCompat' or '$(Configuration)' == 'Mono')">
-    <Reference Include="0Harmony">
-      <HintPath>$(MelonLoaderMonoAssembliesPath)\0Harmony.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
     <Reference Include="MelonLoader">
       <HintPath>$(MelonLoaderMonoAssembliesPath)\MelonLoader.dll</HintPath>
       <Private>false</Private>
@@ -187,10 +182,6 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(UseLocalMelonLoaderReferences)' == 'true' and '$(Configuration)' == 'Il2cpp'">
-    <Reference Include="0Harmony">
-      <HintPath>$(MelonLoaderAssembliesPath)\0Harmony.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
     <Reference Include="MelonLoader">
       <HintPath>$(MelonLoaderAssembliesPath)\MelonLoader.dll</HintPath>
       <Private>false</Private>

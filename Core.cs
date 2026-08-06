@@ -1,16 +1,19 @@
-﻿using FasterDealers.Integrations;
-using FasterDealers.Utils;
+﻿using FasterDealers.Utils;
 using MelonLoader;
 using S1API.Entities;
+using S1API.Entities.NPCs.Docks;
+using S1API.Entities.NPCs.Downtown;
+using S1API.Entities.NPCs.Northtown;
+using S1API.Entities.NPCs.Suburbia;
+using S1API.Entities.NPCs.Uptown;
+using S1API.Entities.NPCs.Westville;
 using S1API.Lifecycle;
 using S1API.Logging;
-using System.Collections;
-using UnityEngine;
 
 [assembly: MelonInfo(typeof(FasterDealers.Core), Constants.MOD_NAME, Constants.MOD_VERSION, Constants.MOD_AUTHOR)]
 [assembly: MelonGame(Constants.Game.GAME_STUDIO, Constants.Game.GAME_NAME)]
 [assembly: MelonAuthorColor(1, 68, 2, 152)]
-[assembly: MelonColor(1, 0, 223, 255)]
+[assembly: MelonColor(1, 68, 2, 152)]
 
 namespace FasterDealers
 {
@@ -23,127 +26,47 @@ namespace FasterDealers
         private static MelonPreferences_Entry<float>? _speedMultiplier;
 
         private Log _logger = new Log(Constants.PREFERENCES_CATEGORY);
-        private bool _speedsBeingSet = false;
-        private int _completedDealers = 0;
-        private const int TOTAL_DEALERS = 6;
-        private const int SPEED_CONTROL_PRIORITY = 999;
-        private readonly object _lock = new object();
-        private HashSet<string> _waitingDealers = new();
-        private HashSet<NPC> _controlledDealers = new();
 
         public override void OnInitializeMelon()
         {
             Instance = this;
             LoadConfig();
-            HarmonyPatches.Initialize(this);
-            _logger.Msg($"{Constants.MOD_NAME} initialized and config loaded. Waiting for Main scene to load.");
-        }
 
-        public override void OnDeinitializeMelon()
-        {
-            RemoveAllSpeedControls();
-            _logger.Msg("Speed controls removed on mod unload.");
-        }
-
-        public override void OnSceneWasInitialized(int buildIndex, string sceneName)
-        {
-            base.OnSceneWasInitialized(buildIndex, sceneName);
-
-            if (!_modEnabled!.Value || sceneName != "Main")
+            if (!_modEnabled!.Value)
             {
+                _logger.Msg($"{Constants.MOD_NAME} is disabled, skipping.");
                 return;
             }
 
-            lock (_lock)
-            {
-                if (_speedsBeingSet)
-                {
-                    _logger.Msg("Dealer speed setting already in progress, skipping...");
-                    return;
-                }
-                _speedsBeingSet = true;
-                _waitingDealers.Clear();
-            }
-
-            MelonCoroutines.Start(SetAllDealerSpeeds());
+            GameLifecycle.OnLoadComplete += ApplyDealerSpeedMultiplier;
+            _logger.Msg($"{Constants.MOD_NAME} initialized and config loaded. Waiting for Main scene to load.");
         }
 
-        private IEnumerator SetAllDealerSpeeds()
+        private void ApplyDealerSpeedMultiplier()
         {
-            _completedDealers = 0;
-
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Northtown.BenjiColeman>(_speedMultiplier!.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Westville.MollyPresley>(_speedMultiplier!.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Downtown.BradCrosby>(_speedMultiplier!.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Docks.JaneLucero>(_speedMultiplier!.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Suburbia.WeiLong>(_speedMultiplier!.Value));
-            MelonCoroutines.Start(WaitAndSetDealerSpeed<S1API.Entities.NPCs.Uptown.LeoRivers>(_speedMultiplier!.Value));
-
-            // Wait for all dealers to be processed
-            while (_completedDealers < TOTAL_DEALERS)
+            NPC?[] dealers =
             {
-                yield return new WaitForSeconds(0.5f);
-            }
+                NPC.Get<BenjiColeman>(),
+                NPC.Get<MollyPresley>(),
+                NPC.Get<BradCrosby>(),
+                NPC.Get<JaneLucero>(),
+                NPC.Get<WeiLong>(),
+                NPC.Get<LeoRivers>()
+            };
 
-            _logger.Msg($"Speed multiplier of {_speedMultiplier!.Value} set for all dealer NPCs!");
-
-            lock (_lock)
+            try
             {
-                _speedsBeingSet = false;
-                _waitingDealers.Clear();
-            }
-        }
-
-        private IEnumerator WaitAndSetDealerSpeed<T>(float speed) where T : NPC
-        {
-            string dealerName = typeof(T).Name;
-            NPC? dealer = null;
-            bool loggedWaiting = false;
-
-            while (dealer == null)
-            {
-                dealer = NPC.Get<T>();
-
-                if (dealer == null)
+                foreach (var dealer in dealers)
                 {
-                    lock (_lock)
-                    {
-                        if (!loggedWaiting && _waitingDealers.Add(dealerName))
-                        {
-                            _logger.Msg($"Waiting for {dealerName} instance to be created...");
-                            loggedWaiting = true;
-                        }
-                    }
-
-                    yield return new WaitForSeconds(0.5f);
+                    dealer?.Movement.SpeedMultiplier = _speedMultiplier!.Value;
                 }
+
+                _logger.Msg("Dealer speed multiplier applied successfully.");
             }
-
-            dealer.Movement.AddSpeedControl(Constants.MOD_NAME, SPEED_CONTROL_PRIORITY, speed);
-            _controlledDealers.Add(dealer);
-
-            _logger.Msg($"Set speed multiplier to {speed} for {dealerName}");
-
-            _completedDealers++;
-        }
-
-        private void RemoveAllSpeedControls()
-        {
-            foreach (NPC? dealer in _controlledDealers)
+            catch
             {
-                try
-                {
-                    if (dealer is not null && dealer.Movement.DoesSpeedControlExist(Constants.MOD_NAME))
-                    {
-                        dealer.Movement.RemoveSpeedControl(Constants.MOD_NAME);
-                    }
-                }
-                catch
-                {
-                    // NPC may already be destroyed on IL2CPP at shutdown
-                }
+                _logger.Msg("Failed to apply dealer speed multiplier.");
             }
-            _controlledDealers.Clear();
         }
 
         private void LoadConfig()
