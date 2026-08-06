@@ -6,7 +6,7 @@ namespace FasterDealers.Utils
         /// Mod information
         /// </summary>
         public const string MOD_NAME = "FasterDealers";
-        public const string MOD_VERSION = "2.2.0";
+        public const string MOD_VERSION = "3.0.0";
         public const string MOD_AUTHOR = "Riccaforte";
         public const string MOD_DESCRIPTION = "A simple mod to make all drug dealer NPCs faster! Speed multiplier can be configured to your desired speed.";
 

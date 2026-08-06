@@ -5,7 +5,7 @@ This is a simple mod to make all drug dealer NPCs walk faster with a configurabl
 ## Requirements
 
 - [MelonLoader v0.7.0](https://thunderstore.io/c/schedule-i/p/LavaGang/MelonLoader/)
-- [S1API Forked by ifBars v2.6.5+](https://thunderstore.io/c/schedule-i/p/ifBars/S1API_Forked/)
+- [S1API Forked by ifBars v3.1.9+](https://thunderstore.io/c/schedule-i/p/ifBars/S1API_Forked/)
 
 ## Installation
 

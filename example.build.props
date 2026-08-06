@@ -1,4 +1,4 @@
-<!-- Copy this file to local.build.props, or run .\setup.ps1 to generate it. -->
+<!-- Copy this file to local.build.props, and change the values as needed for your local setup. -->
 <Project>
   <PropertyGroup>
     <!-- Set to true if you want builds to copy the mod DLL into the target Mods folder. -->
