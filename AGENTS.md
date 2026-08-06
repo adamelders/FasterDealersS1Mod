@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Unity game mod using **MelonLoader** + **Harmony** to make drug dealer NPCs walk faster. Targets both Mono and IL2CPP versions of Schedule 1.
+Unity game mod using MelonLoader and S1API to make drug dealer NPCs walk faster. It targets both Mono and IL2CPP versions of Schedule 1 and has no direct Harmony dependency.
 
 ## Build And Validation
 
@@ -36,24 +36,21 @@ Key properties in `local.build.props`:
 
 ## Architecture
 
-- **`Core.cs`** - Main `MelonMod` entry point. Loads preferences, starts dealer polling after the `Main` scene initializes, and removes speed controls during unload. The six dealer types are intentionally listed explicitly in `SetAllDealerSpeeds`.
-- **`Integrations/HarmonyPatches.cs`** - Initializes Harmony's assembly scan. It currently declares no concrete patches; place new patch classes under `Integrations/`.
+- **`Core.cs`** - Main `MelonMod` entry point. It loads preferences in `OnInitializeMelon`, subscribes to `GameLifecycle.OnLoadComplete`, then applies the configured multiplier directly to the six explicitly listed dealer NPC types through S1API.
 - **`Utils/Constants.cs`** - Mod metadata, preference category, and shared constants.
 
 ## Key Conventions
 
 - **Multi-platform code**: Use `#if MONO`, `#elif IL2CPP`, and `#elif CROSS_COMPAT` where APIs differ. CrossCompat defines both `CROSS_COMPAT` and `MONO`; it is a Mono-compatible shipping build and still relies on Unity assemblies.
-- **Dependencies**: By default, the project restores S1API.Forked `3.1.9`, MelonLoader `0.7.0`, and HarmonyX `2.15.0` from NuGet.
-- **S1API lifecycle**: Register S1API content from `GameLifecycle.OnPreLoad`. Retrieve a dealer instance with `NPC.Get<T>()`; do not assume it exists immediately after a scene change.
-- **Harmony patches**: Keep patch classes under `Integrations/` so `HarmonyPatches.Initialize` discovers them through `PatchAll`.
+- **Dependencies**: By default, the project restores S1API.Forked `3.1.9` and MelonLoader `0.7.0` from NuGet. Add Harmony only when introducing a concrete patch that requires it.
+- **S1API lifecycle**: Subscribe to `GameLifecycle.OnLoadComplete` before retrieving dealers with `NPC.Get<T>()`. Keep null-safe application because an NPC can be unavailable at load completion.
 - **Constants**: Keep IDs, version strings, preference names, and log tags in `Utils/Constants.cs`.
 - **Preferences**: MelonPreferences persist in `UserData/MelonPreferences.cfg`. Category: `FasterDealers`; entries are `Enabled` (bool) and `SpeedMultiplier` (float, default `3.0`).
-- **Shared coroutine state**: Preserve locking around `_speedsBeingSet` and `_waitingDealers`; speed-control cleanup must remove the mod's named control from each tracked NPC.
 
 ## Pitfalls
 
 - **`local.build.props` is git-ignored** - copy from `example.build.props` and configure local paths before building platform-specific targets. Never commit it.
-- **NPC timing**: Dealers may not exist when the scene loads. Preserve coroutine polling with `yield return new WaitForSeconds(0.5f)` rather than treating a missing NPC as an error.
+- **NPC timing**: A dealer may still be unavailable when `OnLoadComplete` runs. Preserve null-safe application and investigate the lifecycle before adding polling or retries.
 - **Compatibility boundaries**: `Assembly-CSharp` is only referenced by the Mono and Il2cpp configurations. CrossCompat may use the Mono Unity references but should avoid APIs that require direct game assemblies.
 
 ## External References
@@ -64,8 +61,6 @@ The S1API GitHub repository is configured as an MCP server for code and document
 
 - [S1API Documentation](https://ifbars.github.io/S1API/) - Game API reference for Schedule 1 modding
 - [MelonLoader Wiki](https://melonwiki.xyz/#/) - Mod loader documentation, lifecycle hooks, and preferences API
-- [Harmony Guide](https://harmony.pardeike.net/) - Patching framework overview and patterns
-- [Harmony API Reference](https://harmony.pardeike.net/api/index.html) - Full Harmony API reference
 
 ## Documentation
 
