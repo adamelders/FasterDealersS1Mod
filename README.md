@@ -2,6 +2,10 @@
 
 This is a simple mod to make all drug dealer NPCs walk faster with a configurable speed. Cross-compatible with both IL2CPP (main branch) and Mono (alternate beta branch)!
 
+## Supported Game Version
+
+- v0.4.6f11 (Gamepad Support update)
+
 ## Requirements
 
 - [MelonLoader v0.7.0](https://thunderstore.io/c/schedule-i/p/LavaGang/MelonLoader/)
